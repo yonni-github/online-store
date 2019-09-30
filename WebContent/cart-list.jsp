@@ -76,7 +76,7 @@
 </nav>  
 
 <div class="row">  
-  <div class="col-sm-2">Left Panel</div>
+  
   <div class="col-sm-10">
 	<div  class="container-fluid">    
 	  <div class="row">
@@ -107,6 +107,7 @@
 	   </div>
 	</div><br><br>
   </div>
+  <div class="col-sm-2">Left Panel</div>
  </div>	
 	
 <footer class="container-fluid text-center">

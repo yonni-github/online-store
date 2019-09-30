@@ -1,7 +1,9 @@
 package com.dikuanteberh.web.jdbc;
 
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
@@ -21,6 +23,7 @@ public class ControllerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private ProductDbUtil productDbUtil;
+	private CartUtil cartUtil;
 	
 	//Define dataSource/connection pool for resource injection
 	@Resource(name="jdbc/online_store")
@@ -33,6 +36,7 @@ public class ControllerServlet extends HttpServlet {
 		//create our Product db util and pass conn pool/ datasource
 		try {
 			productDbUtil = new ProductDbUtil(dataSource);
+			cartUtil = new CartUtil();
 		}catch(Exception exc) {
 			throw new ServletException(exc);
 		}
@@ -57,10 +61,15 @@ public class ControllerServlet extends HttpServlet {
 				listProducts(request, response);
 				break;
 				
-			case "CART":
-				//sent item to cart
+			case "ADD":
+				//Add item to cart
 				addToCart(request, response);
 				break;
+			
+			case "CART":
+				//Add item to cart
+				goToCart(request, response);
+				break;	
 				
 			case "LOAD":
 				//load product detail page
@@ -78,7 +87,34 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 	
-	private void addToCart(HttpServletRequest request, HttpServletResponse response) {
+	private void goToCart(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("going to cart");	
+		// get Products from cart util
+		Set<Product> products = cartUtil.getCartItems();
+		Hashtable <Integer, Integer> itemCount = cartUtil.getItemCount();
+		
+		//add products to the request 
+		request.setAttribute("PRODUCT_LIST", products);
+		//add item count data to request
+		request.setAttribute("ITEM_COUNT", itemCount);
+		
+		//send to jsp page
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/cart-list.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	private void addToCart(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("Item Added to cart");
+		//read Product id from form data
+		String theProductKey = request.getParameter("productKey");
+		
+		//get Product from db
+		Product theProduct = productDbUtil.getProduct(theProductKey);
+		
+		//add product to cart
+		cartUtil.addToCart(theProduct);
+		
+		listProducts(request, response);
 		
 	}
 
@@ -86,7 +122,7 @@ public class ControllerServlet extends HttpServlet {
 		// get Products from db util
 		List<Product> products = productDbUtil.getProducts();
 		
-		//add students to the request 
+		//add products to the request 
 		request.setAttribute("PRODUCT_LIST", products);
 		
 		//send to jsp page

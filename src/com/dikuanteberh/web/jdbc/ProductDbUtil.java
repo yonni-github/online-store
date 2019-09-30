@@ -204,7 +204,7 @@ private DataSource dataSource;
 			myConn = dataSource.getConnection();
 			
 			//create sql update statement
-			String sql  = "delete from Product where id=?";
+			String sql  = "delete from Product where product_key=?";
 			
 			//prepare statement
 			myStmt = myConn.prepareStatement(sql);

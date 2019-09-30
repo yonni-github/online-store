@@ -76,6 +76,29 @@ public class Product {
 		this.imagePath = imagePath;
 	}
 
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + productKey;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Product other = (Product) obj;
+		if (productKey != other.productKey)
+			return false;
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		return "Product [productKey=" + productKey + ", name=" + name + ", description=" + description + ", type="
