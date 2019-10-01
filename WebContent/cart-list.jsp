@@ -75,40 +75,72 @@
   </div>
 </nav>  
 
-<div class="row">  
+<div class="row container">  
   
-  <div class="col-sm-10">
+  <div class="col-sm-8">
 	<div  class="container-fluid">    
-	  <div class="row">
+	  
 	  	<c:forEach var="tempProduct" items="${PRODUCT_LIST}">
-	  		<!-- set up a link for each student -->
-			<c:url var="toCartLink" value="ControllerServlet">
-				<c:param name="command" value="ADD" />
-				<c:param name="productKey" value="${tempProduct.productKey}" />
-			</c:url>
 			
 			<c:url var="detailLink" value="ControllerServlet">
 						<c:param name="command" value="LOAD" />
 						<c:param name="productKey" value="${tempProduct.productKey}" />		
 			</c:url>
-			
-		    <div class="col-sm-3">
-	    	  
-		      <div class="panel panel-primary" style="position: relative">
-		      	<a href="${detailLink}"> 
-      				<span class="hyperspan"></span>
-  			 	 </a>
-		        <div class="panel-heading">${tempProduct.name}</div>
-		        <div class="panel-body"><img src="${tempProduct.imagePath}?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-		        <div class="panel-footer"> $ ${tempProduct.price} <a id="add-to-cart" href="${toCartLink}"><button type="button" class="btn btn-success">Add To Cart</button></a></div>
-		      </div>
-		    </div>
+			<div class="row">
+				<div class="col-sm-4">
+			      <div class="panel panel-primary" style="position: relative">
+			      	<a href="${detailLink}"> 
+	      				<span class="hyperspan"></span>
+	  			 	 </a>
+			        <div class="panel-body"><img src="${tempProduct.imagePath}?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div> 
+			      </div>
+			    </div>
+			    
+			    <div class="col-sm-8">
+			      <div class="panel panel-primary" style="position: relative">
+			      	<div class="panel-body">
+		        		Details: ${tempProduct.description} <br>
+		        		Category: ${tempProduct.type}<br>
+		        		In Stock: <%= "${tempProduct.quantity}".equals("0") ? "Not Available" : "Available" %>
+		       		 </div>
+		       		 <div style="position: relative; left:15px"> Price: $ ${tempProduct.price}</div> <br>
+		       		 <div class="row" style="position: relative; left:15px; bottom:15px">
+				       		<div class="col-sm-8">
+				  				<form class="form-inline" id="form1" action="ControllerServlet" method="GET">
+									<input type="hidden" name="command" value="UPDATE" >
+									<input type="hidden" name="productKey" value="${tempProduct.productKey}" >
+									Quantity: <input type="number" name="quantity" value="1" min="1" max="5">
+									<button type="submit" form="form1" value="Submit" class="btn btn-success">UPDATE</button>
+								</form>
+								
+		  					</div>
+				       		 <div class="col-sm-4">
+				  				<form id="form2" action="ControllerServlet" method="GET">
+									<input type="hidden" name="command" value="REMOVE" >
+									<input type="hidden" name="productKey" value="${tempProduct.productKey}" >
+									<button type="submit" value="Submit" class="btn btn-warning">REMOVE</button>
+								</form>
+		  					</div>
+	  				 </div>
+			      </div>
+			    </div>
+			</div>
 	    </c:forEach>
-	   </div>
+	   
 	</div><br><br>
   </div>
-  <div class="col-sm-2">Left Panel</div>
- </div>	
+  <div class="col-sm-4">
+  	<div class="panel panel-primary" style="position: relative">
+  		<div class="panel-heading"><h3>Totals</h3></div>
+  		<div class="panel-body">
+        	Subtotal: ------ <br>
+        	Tax: ------------<br>
+        	Total Due: --------
+		        
+		</div>
+  	</div>
+  </div>
+</div>	
 	
 <footer class="container-fluid text-center">
   <p>Online Store Copyright</p>  
