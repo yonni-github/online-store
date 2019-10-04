@@ -43,11 +43,23 @@
 <body>
 
 	<div class="jumbotron">
-	  <div class="container text-center">
-	    <h1>Online Store</h1>      
-	    <p>Mission, Vission & Values</p>
-	  </div>
+	<div class="row">
+		<div class="col-sm-4" >
+			<img src="images/divbg2.jpeg?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">	
+		</div>
+		<div class="col-sm-4">
+			 <div class="container text-center">
+    			<h1>Online Store</h1>      
+    			<h3>Fresh, Organic @ Fair Price!</h3>
+ 			 </div>
+		</div>
+		<div class="col-sm-4" >
+			<img src="images/divbg3.jpeg?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">	
+		</div>
 	</div>
+  
+</div>
+
 	
 	<nav class="navbar navbar-inverse">
 	  <div class="container-fluid">
@@ -76,12 +88,12 @@
 
 	<div  class="container">    
 	  <div class="row">
-	  	<div class="col-sm-8">
+	  	<div class="col-sm-6">
 	  		<div class="panel panel-primary" style="position: relative">
 		        <div class="panel-body"><img src="${THE_PRODUCT.imagePath}?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div> 
 		      </div>
 	  	</div>
-  		<div class="col-sm-4">
+  		<div class="col-sm-6">
   			<div class="panel panel-primary" style="position: relative">
 		      
 		        <div class="panel-heading">${THE_PRODUCT.name}</div>

@@ -56,29 +56,39 @@ public class ControllerServlet extends HttpServlet {
 			}
 			//route to appropriate method
 			switch(theCommand) {
-			case "LIST":
-				//list the Products in mvc fashion
-				listProducts(request, response);
-				break;
+				case "LIST":
+					//list the Products in mvc fashion
+					listProducts(request, response);
+					break;
+					
+				case "ADD":
+					//Add item to cart
+					addToCart(request, response);
+					break;
 				
-			case "ADD":
-				//Add item to cart
-				addToCart(request, response);
-				break;
-			
-			case "CART":
-				//Add item to cart
-				goToCart(request, response);
-				break;	
+				case "CART":
+					//Add item to cart
+					goToCart(request, response);
+					break;	
+					
+				case "UPDATE":
+					//update item count in shopping cart
+					updateItemCount(request, response);
+					break;
+					
+				case "REMOVE":
+					//update item count in shopping cart
+					removeItemFromCart(request, response);
+					break;	
+					
+				case "LOAD":
+					//load product detail page
+					loadProduct(request, response);
+					break;	
 				
-			case "LOAD":
-				//load product detail page
-				loadProduct(request, response);
-				break;	
-			
-			default:
-				//list the Products in mvc fashion
-				listProducts(request, response);
+				default:
+					//list the Products in mvc fashion
+					listProducts(request, response);
 			
 			}
 			
@@ -87,16 +97,47 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 	
+	private void removeItemFromCart(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//read Product key from form data
+		String theProductKey = request.getParameter("productKey");
+				
+		//get Product from db
+		Product theProduct = productDbUtil.getProduct(theProductKey);
+		
+		cartUtil.removeFromCart(theProduct);
+		goToCart(request, response);
+		
+	}
+
+	private void updateItemCount(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//read Product key from form data
+		int productKey = Integer.parseInt(request.getParameter("productKey"));
+		
+		//read new quantity from form data
+		int newQuantity = Integer.parseInt(request.getParameter("quantity"));
+		
+		cartUtil.updateItemCount(productKey, newQuantity);
+		goToCart(request, response);
+		
+	}
+
 	private void goToCart(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		System.out.println("going to cart");	
-		// get Products from cart util
+		// get cart details from cart util
 		Set<Product> products = cartUtil.getCartItems();
 		Hashtable <Integer, Integer> itemCount = cartUtil.getItemCount();
+		double subtotal = cartUtil.getSubTotal();
+		double total = cartUtil.getTotal();
+		double VAT = cartUtil.getVAT();
 		
 		//add products to the request 
 		request.setAttribute("PRODUCT_LIST", products);
 		//add item count data to request
 		request.setAttribute("ITEM_COUNT", itemCount);
+		
+		request.setAttribute("SUBTOTAL", subtotal);
+		request.setAttribute("TOTAL", total);
+		request.setAttribute("VAT", VAT);
 		
 		//send to jsp page
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/cart-list.jsp");
