@@ -1,6 +1,8 @@
 package com.dikuanteberh.web.jdbc;
 
-public class Product {
+import java.util.Comparator;
+
+public class Product implements Comparable<Product>{
 	private int productKey;
 	private String name;
 	private String description;
@@ -76,7 +78,30 @@ public class Product {
 		this.imagePath = imagePath;
 	}
 
-	
+	public static final Comparator<Product> PriceLowToHighComparator = new Comparator<Product>(){
+
+        @Override
+        public int compare(Product o1, Product o2) {
+            return Double.compare(o1.price, o2.price);
+        }
+      
+    };
+    
+    
+    public static final Comparator<Product> TypeComparator = new Comparator<Product>(){
+
+        @Override
+        public int compare(Product o1, Product o2) {
+        	return o1.type.compareTo(o2.type);      
+        }
+      
+    };
+
+	@Override
+    public int compareTo(Product o) {
+        return this.name.compareTo(o.name);
+    }
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

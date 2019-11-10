@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 
 import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
@@ -24,7 +25,10 @@ public class ControllerServlet extends HttpServlet {
 
 	private ProductDbUtil productDbUtil;
 	private CartUtil cartUtil;
-	
+	private List<Product> products;
+	private String search;
+	private String sort;
+	private String type;
 	//Define dataSource/connection pool for resource injection
 	@Resource(name="jdbc/online_store")
 	private DataSource dataSource;
@@ -37,6 +41,10 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			productDbUtil = new ProductDbUtil(dataSource);
 			cartUtil = new CartUtil();
+			products = null;
+			search = "";
+			type = "All Products";
+			sort = "Alphabetic";
 		}catch(Exception exc) {
 			throw new ServletException(exc);
 		}
@@ -50,16 +58,46 @@ public class ControllerServlet extends HttpServlet {
 			//read the COMMAND param
 			String theCommand = request.getParameter("command");
 			
+			//get search keyword if any 
+			search = request.getParameter("search");
+		
+			//get Category/type to search in
+			type = request.getParameter("type");
+			
+			//get sort tag
+			sort = request.getParameter("sort");
+			
 			//if command is missing set it to default
 			if(theCommand == null) {
 				theCommand = "LIST";
 			}
+			
+			if(search == null) {
+				search = "";
+			}
+			
+			if(type == null) {
+				type = "All Products";
+			}
+			
+			if(sort == null) {
+				sort = "Alphabetic";
+			}
+			
+		
 			//route to appropriate method
 			switch(theCommand) {
 				case "LIST":
+					// get Products from db util
+					products = productDbUtil.getProducts(type, search);
 					//list the Products in mvc fashion
 					listProducts(request, response);
 					break;
+					
+				case "SORT":
+					//load product detail page
+					sortProducts(request, response);
+					break;	
 					
 				case "ADD":
 					//Add item to cart
@@ -87,6 +125,8 @@ public class ControllerServlet extends HttpServlet {
 					break;	
 				
 				default:
+					// get Products from db util
+					products = productDbUtil.getProducts(type, search);
 					//list the Products in mvc fashion
 					listProducts(request, response);
 			
@@ -97,6 +137,37 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 	
+	private void sortProducts(HttpServletRequest request, HttpServletResponse response) throws Exception{
+
+		switch(sort) {
+		
+		case "Alphabetic":
+			Collections.sort(products);
+			break;
+			
+		case "Price: Low to High":
+			Collections.sort(products, Product.PriceLowToHighComparator);
+			break;
+			
+		case "Price: High to Low":
+			Collections.sort(products, Product.PriceLowToHighComparator);
+			Collections.reverse(products);
+			break;
+			
+		case "Type":
+			Collections.sort(products, Product.TypeComparator);
+			break;
+		default:
+			Collections.sort(products);
+		
+		}
+		
+		
+		
+		listProducts(request, response);
+		
+	}
+
 	private void removeItemFromCart(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		//read Product key from form data
 		String theProductKey = request.getParameter("productKey");
@@ -158,13 +229,25 @@ public class ControllerServlet extends HttpServlet {
 		listProducts(request, response);
 		
 	}
+	
+	
 
 	private void listProducts(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		// get Products from db util
-		List<Product> products = productDbUtil.getProducts();
 		
 		//add products to the request 
 		request.setAttribute("PRODUCT_LIST", products);
+		
+		if(search!= null && !search.equals("")) {
+			request.setAttribute("KEYWORD", search);
+		}
+		
+		if(type!= null) {
+			request.setAttribute("TYPE", type);
+		}
+		
+		if(sort!= null) {
+			request.setAttribute("SORT", sort);
+		}
 		
 		//send to jsp page
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/list-products.jsp");

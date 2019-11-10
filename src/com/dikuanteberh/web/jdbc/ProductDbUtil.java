@@ -18,23 +18,34 @@ private DataSource dataSource;
 		dataSource = theDataSource;
 	}
 	
-	public List<Product> getProducts() throws Exception{
+	public List<Product> getProducts(String cat, String keyword) throws Exception{
 		List<Product> Products = new ArrayList<>();
 		
 		Connection myConn = null;
 		Statement myStmt = null;
+		PreparedStatement myStmt2 = null;
 		ResultSet myRs = null;
+		String sql ="";
 		
 		try {
 			//get a connection
 			myConn = dataSource.getConnection();
 			
 			//create sql statement
-			String sql  = "select * from Product order by name";
-			myStmt = myConn.createStatement();
-			
-			//execute query
-			myRs = myStmt.executeQuery(sql);
+			if(cat == null || cat.contentEquals("All Products") || cat.equals("")) {
+				sql  = "select * from Product order by name";
+				myStmt = myConn.createStatement();
+				//execute query
+				myRs = myStmt.executeQuery(sql);
+			}else {
+				sql  = "select * from Product where type=?";
+				myStmt2 = myConn.prepareStatement(sql);
+				
+				//set params
+				myStmt2.setString(1, cat);
+				//execute query
+				myRs = myStmt2.executeQuery();
+			}
 			
 			//process result set
 			while(myRs.next()) {
@@ -50,8 +61,13 @@ private DataSource dataSource;
 				//create new Product object
 				Product tempProduct = new Product(productKey, name, description, type, quantity, price, imagePath);
 				
-				//add it to the list of elements
-				Products.add(tempProduct);
+				if(keyword == null || keyword.equals("")) {
+					//add it to the list of elements
+					Products.add(tempProduct);
+				}else if(tempProduct.getDescription().contains(keyword) || tempProduct.getName().contains(keyword) || tempProduct.getType().contains(keyword)){
+					//add it to the list of elements
+					Products.add(tempProduct);
+				}
 				
 			}
 

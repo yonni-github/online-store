@@ -86,10 +86,76 @@
   </div>
 </nav>  
 
+<div  class="container">
+<div class="row">
+	<div class="col-sm-2"></div>
+	<%
+		String[] types = {"All Products", "Bakery", "Dairy", "Drink", "Poultry"};
+		pageContext.setAttribute("TYPES", types);
+		
+		String[] sorts = {"Alphabetic", "Price: Low to High", "Price: High to Low", "Type"};
+		pageContext.setAttribute("SORTS", sorts);
+	%>
+	<div class="col-sm-10">
+	<form class="" action="ControllerServlet" method="GET">
+		<div class="row">
+			<div class="col-sm-3">
+				<div class="form-group" >
+				  <select class="form-control" name="type" onchange='this.form.submit()' id="type" style="background-color: #89CFF0">
+					 <c:forEach var="type" items="${TYPES}">
+			    		<option <c:if test="${type.equals(TYPE)}"> selected </c:if>>${type}</option>
+			    	 </c:forEach>
+				  </select>
+				</div>
+			
+			</div>
+				
+				<div class="col-sm-9">
+					 <div class="input-group">
+				       <input type="Search" name="search" value="${KEYWORD}" placeholder="Search..." class="form-control" />
+				       <div class="input-group-btn">
+				           <button class="btn btn-info">
+				           <span class="glyphicon glyphicon-search"></span>
+				           </button>
+				       </div>
+			 	  	</div>
+				
+				</div>
+	
+		</div>
+	</form>
+	
+	<div class="row">
+		<div class="col-sm-7">
+		</div>
+		<div class="col-sm-2">
+			<h5>Sort Items: </h5>
+		</div>
+		<div class="col-sm-3">
+			<form class="" action="ControllerServlet" method="GET">
+				<input type="hidden" name="command" value="SORT" >
+				<input type="hidden" name="search" value="${KEYWORD}" >
+				<input type="hidden" name="type" value="${TYPE}" >
+				<div class="form-group" >
+				  <select class="form-control" name="sort" onchange='this.form.submit()' id="sort" style="background-color: #89CFF0">
+				    <c:forEach var="sort" items="${SORTS}">
+			    		<option <c:if test="${sort.equals(SORT)}"> selected </c:if>>${sort}</option>
+			    	 </c:forEach>
+				  </select>
+				</div>
+			</form>
+		</div>
+	</div>
+	</div>
+</div>
+</div>
+<br>
 <div class="row">  
-  <div class="col-sm-2">Left Panel</div>
+  <div class="col-sm-2">Filter</div>
   <div class="col-sm-10">
-	<div  class="container-fluid">    
+  	
+	<div  class="container-fluid"> 
+	 
 	  <div class="row">
 	  	<c:forEach var="tempProduct" items="${PRODUCT_LIST}">
 	  		<!-- set up a link for each student -->
